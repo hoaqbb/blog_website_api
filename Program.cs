@@ -15,7 +15,10 @@ namespace blog_website_api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddCorsServices();
+
             builder.Services.AddApplicationServices(builder.Configuration);
+            builder.Services.AddAuthenticationServices(builder.Configuration);
 
             var app = builder.Build();
 
@@ -28,6 +31,9 @@ namespace blog_website_api
 
             app.UseHttpsRedirection();
 
+            app.UseCors();
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

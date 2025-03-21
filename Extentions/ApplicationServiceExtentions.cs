@@ -1,4 +1,8 @@
 ﻿using blog_website_api.Data.Entities;
+using blog_website_api.Helpers.MappingProfiles;
+using blog_website_api.Interfaces;
+using blog_website_api.Repositories;
+using blog_website_api.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace blog_website_api.Extentions
@@ -10,7 +14,12 @@ namespace blog_website_api.Extentions
             services.AddDbContext<BlogDbContext>(opt =>
                 opt.UseNpgsql(config.GetConnectionString("PostgresDb"))
             );
-        
+
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
+
+            services.AddAutoMapper(typeof(UserProfile).Assembly);
+
             return services;
         }
     }
