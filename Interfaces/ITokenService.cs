@@ -12,6 +12,7 @@ namespace blog_website_api.Interfaces
         List<Claim> GenerateClaims(User user);
         ClaimsPrincipal GetPrincipalFromExpinariedToken(string token);
         void SetTokenInsideCookies(TokenDto tokenDto, HttpContext httpContext);
+        void RemoveTokenInsideCookies(HttpContext httpContext);
         Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(string googleToken);
     }
 }

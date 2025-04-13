@@ -69,6 +69,13 @@ namespace blog_website_api.Repositories
             return user;
         }
 
+        public async Task<User?> FindUserByIdAsync(Guid id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            //var user = await _context.Users.SingleOrDefaultAsync(x => x.Id == id);
+            return user;
+        }
+
         public async Task<User> RegisterAsync(RegisterDto registerDto)
         {
             var user = _mapper.Map<User>(registerDto);
@@ -81,6 +88,20 @@ namespace blog_website_api.Repositories
             await _context.SaveChangesAsync();
 
             return user;
+        }
+
+        public async Task RemoveUserTokenAsync(User user)
+        {
+            user.RefreshToken = null;
+            user.TokenExpiryTime = null;
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(User user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
         }
 
         private byte[] HashPassword(string password)

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using blog_website_api.Controllers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 namespace blog_website_api.Extentions
@@ -30,7 +32,23 @@ namespace blog_website_api.Extentions
                     {
                         ctx.Request.Cookies.TryGetValue("accessToken", out string accessToken);
                         if (!string.IsNullOrEmpty(accessToken))
-                            ctx.Token = accessToken;
+                        {
+                            var tokenHandler = new JwtSecurityTokenHandler();
+                            try
+                            {
+                                var token = tokenHandler.ReadJwtToken(accessToken);
+                                if (token.ValidTo > DateTime.UtcNow)
+                                {
+                                    // Token is expired, don't set ctx.Token
+                                    // This will cause authentication to fail with 401 Unauthorized
+                                    ctx.Token = accessToken;
+                                }
+                            }
+                            catch
+                            {
+                                ctx.NoResult();
+                            }
+                        }
 
                         return Task.CompletedTask;
                     }

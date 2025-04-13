@@ -29,7 +29,7 @@ namespace blog_website_api.Services
                 issuer: "https://localhost:7179",
                 //audience: "https://localhost:7194",
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(5),
+                expires: DateTime.Now.AddMinutes(1),
                 signingCredentials: signinCredentials
             );
 
@@ -87,6 +87,20 @@ namespace blog_website_api.Services
                 throw new Exception("Invalid Token!");
 
             return principal;
+        }
+
+        public void RemoveTokenInsideCookies(HttpContext httpContext)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                IsEssential = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            };
+
+            httpContext.Response.Cookies.Delete("accessToken", cookieOptions);
+            httpContext.Response.Cookies.Delete("refreshToken", cookieOptions);
         }
 
         public void SetTokenInsideCookies(TokenDto tokenDto, HttpContext httpContext)
