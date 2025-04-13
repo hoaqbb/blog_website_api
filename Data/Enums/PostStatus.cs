@@ -2,8 +2,8 @@
 {
     public enum PostStatus
     {
-        Archive,
-        Ban,
-        Public
+        Ban = 0,
+        Public = 1,
+        Archive = 2,
     }
 }
