@@ -4,6 +4,7 @@ using blog_website_api.Interfaces;
 using blog_website_api.Repositories;
 using blog_website_api.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace blog_website_api.Extentions
 {
@@ -17,8 +18,9 @@ namespace blog_website_api.Extentions
 
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IPostRepository, PostRepository>();
 
-            services.AddAutoMapper(typeof(UserProfile).Assembly);
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             return services;
         }

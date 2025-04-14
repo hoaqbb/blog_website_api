@@ -10,7 +10,7 @@ namespace blog_website_api.Interfaces
         string GenerateAccessToken(IEnumerable<Claim> claims);
         string GenerateRefreshToken();
         List<Claim> GenerateClaims(User user);
-        ClaimsPrincipal GetPrincipalFromExpinariedToken(string token);
+        ClaimsPrincipal GetPrincipalFromAccessToken(string token);
         void SetTokenInsideCookies(TokenDto tokenDto, HttpContext httpContext);
         void RemoveTokenInsideCookies(HttpContext httpContext);
         Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(string googleToken);

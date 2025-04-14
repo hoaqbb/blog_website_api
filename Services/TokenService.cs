@@ -65,7 +65,7 @@ namespace blog_website_api.Services
             }
         }
 
-        public ClaimsPrincipal GetPrincipalFromExpinariedToken(string token)
+        public ClaimsPrincipal GetPrincipalFromAccessToken(string token)
         {
             var tokenValidationParameters = new TokenValidationParameters
             {

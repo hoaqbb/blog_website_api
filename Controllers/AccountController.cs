@@ -2,12 +2,7 @@
 using blog_website_api.Data.Entities;
 using blog_website_api.DTOs.UserDtos;
 using blog_website_api.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.JsonWebTokens;
-using System.Security.Claims;
-using System.Security.Principal;
 
 namespace blog_website_api.Controllers
 {
@@ -68,7 +63,7 @@ namespace blog_website_api.Controllers
                         RefreshToken = user.RefreshToken 
                     }, 
                         HttpContext);
-                    return Ok();
+                    return Ok(_mapper.Map<UserDto>(user));
                 }
                 return BadRequest();
             }

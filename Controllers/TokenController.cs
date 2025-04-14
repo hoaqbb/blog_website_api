@@ -32,7 +32,7 @@ namespace blog_website_api.Controllers
 
             try
             {
-                var principal = _tokenService.GetPrincipalFromExpinariedToken(accessToken);
+                var principal = _tokenService.GetPrincipalFromAccessToken(accessToken);
 
                 var isPrincipalContainUserId = Guid.TryParse(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid userId);
 
