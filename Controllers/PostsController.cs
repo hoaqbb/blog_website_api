@@ -19,6 +19,7 @@ namespace blog_website_api.Controllers
         }
 
         [HttpGet("{slug}")]
+        [HttpGet("{slug}", Name = "GetPost")]
         public async Task<ActionResult> GetPostBySlug(string slug)
         {
             var post = await _postRepository.GetPostBySlug(slug);
@@ -37,5 +38,18 @@ namespace blog_website_api.Controllers
             return Ok(post);
         }
 
+        [Authorize]
+        [HttpPost]
+        public async Task<ActionResult> CreatePost([FromBody] CreatePostDto createPostDto)
+        {
+            var isLoggedIn = Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid authorId);
+            if (!isLoggedIn) return Unauthorized();
+
+            var post = await _postRepository.CreatePostAsync(createPostDto, authorId);
+
+            if(post == null) return BadRequest("Problem creating post!");
+
+            return CreatedAtRoute("GetPost", new {slug = post.Slug}, post);
+        }
     }
 }

@@ -51,5 +51,49 @@ namespace blog_website_api.Repositories
 
             return isLiked;
         }
+
+        public async Task<PostDetailDto> CreatePostAsync(CreatePostDto createPostDto, Guid authorId)
+        {
+            var post = new Post
+            {
+                Id = Guid.NewGuid(),
+                Title = createPostDto.Title,
+                Content = createPostDto.Content,
+                ShortDescription = createPostDto.ShortDescription,
+                Slug = GenerateSlug(createPostDto.Title),
+                AuthorId = authorId,
+                CategoryId = createPostDto.CategoryId,
+                Status = createPostDto.Status
+            };
+            await _context.AddAsync(post);
+
+            var postImages = new List<PostImage>();
+            if (createPostDto.PostImages != null)
+            {
+                foreach (var img in createPostDto.PostImages)
+                {
+                    var postImg = new PostImage
+                    {
+                        PostId = post.Id,
+                        PublicId = img.PublicId,
+                        Url = img.ImageUrl,
+                        IsThumbnail = img.IsThumbnail
+                    };
+                    postImages.Add(postImg);
+                }
+                await _context.AddRangeAsync(postImages);
+            }
+
+            await _context.SaveChangesAsync();
+            return _mapper.Map<PostDetailDto>(post);
+        }
+
+        //generate slug with slugify lib
+        private string GenerateSlug(string title)
+        {
+            var randomNumber = new Random().Next(10000000);
+            return new SlugHelper()
+                .GenerateSlug(title + " " + randomNumber.ToString());
+        }
     }
 }
