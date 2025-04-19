@@ -12,5 +12,10 @@ namespace blog_website_api.Interfaces
         Task<PostDetailDto> GetPostBySlug(string slug);
         Task<bool> IsPostLikedByCurrentUser(Guid userId, Guid postId);
         Task<PostDetailDto> CreatePostAsync(CreatePostDto createPostDto, Guid authorId);
+        Task<PaginatedResult<PostListDto>> GetPostsByCategory(
+                PostSpecificationParams postSpecificationParams,
+                ISpecification<Post> spec,
+                Guid userId
+            );
     }
 }

@@ -95,5 +95,38 @@ namespace blog_website_api.Repositories
             return new SlugHelper()
                 .GenerateSlug(title + " " + randomNumber.ToString());
         }
+        public async Task<PaginatedResult<PostListDto>> GetPostsByCategory(
+            PostSpecificationParams param, 
+            ISpecification<Post> spec,
+            Guid userId)
+        {
+            var inputQuery = _context.Set<Post>().AsQueryable();
+            // query is paginated
+            var query = SpecificationEvaluator<Post>
+                .GetQuery<PostListDto>(inputQuery, spec, _mapper);
+            // query is not paginated to count the number of item
+            inputQuery = spec.ApplyCriteria(inputQuery);
+
+            var totalItems = await inputQuery.CountAsync();
+            var posts = await query.ToListAsync();
+
+            // Get the list of postIds that the user has liked in the current page only
+            var postIds = posts.Select(x => x.Id);
+            var likedPostIds = await _context.PostLikes
+                .Where(x => x.UserId == userId && postIds.Contains(x.PostId))
+                .Select(x => x.PostId)
+                .ToListAsync();
+
+            // Reassign IsLikedByCurrentUser based on likedPostIds
+            foreach ( var post in posts)
+            {
+                post.IsLikedByCurrentUser = likedPostIds.Contains(post.Id);
+            }
+
+            var result = new PaginatedResult<PostListDto>(posts, totalItems, param.PageIndex, param.PageSize);
+
+            return result;
+        }
+
     }
 }
