@@ -19,6 +19,7 @@ namespace blog_website_api.Extentions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountRepository, AccountRepository>();
             services.AddScoped<IPostRepository, PostRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 

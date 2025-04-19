@@ -1,5 +1,11 @@
-﻿using blog_website_api.Interfaces;
+﻿using blog_website_api.Data.Entities;
+using blog_website_api.DTOs.BlogDtos;
+using blog_website_api.Helpers.Params;
+using blog_website_api.Interfaces;
+using blog_website_api.Specifications;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 
@@ -16,9 +22,18 @@ namespace blog_website_api.Controllers
         {
             _postRepository = postRepository;
             _tokenService = tokenService;
+        [Authorize]
+        [HttpGet("category")]
+        public async Task<ActionResult> GetWithCat([FromQuery] PostSpecificationParams postSpecificationParams)
+        {
+            Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid userId);
+            var spec = new PostSpecification(postSpecificationParams, userId);
+
+            var result = await _postRepository.GetPostsByCategory(postSpecificationParams, spec, userId);
+
+            return Ok(result);
         }
 
-        [HttpGet("{slug}")]
         [HttpGet("{slug}", Name = "GetPost")]
         public async Task<ActionResult> GetPostBySlug(string slug)
         {
