@@ -95,6 +95,26 @@ namespace blog_website_api.Repositories
             return new SlugHelper()
                 .GenerateSlug(title + " " + randomNumber.ToString());
         }
+
+        public async Task<IEnumerable<PostListDto>> GetAll(Guid userId)
+        {
+            var posts = await _context.Posts
+                .ProjectTo<PostListDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            var likedPostIds = await _context.PostLikes
+                .Where(x => x.UserId == userId)
+                .Select(x => x.PostId)
+                .ToListAsync();
+
+            foreach (var item in posts)
+            {
+                item.IsLikedByCurrentUser = likedPostIds.Contains(item.Id);
+            }
+
+            return posts;
+        }
+
         public async Task<PaginatedResult<PostListDto>> GetPostsByCategory(
             PostSpecificationParams param, 
             ISpecification<Post> spec,
@@ -128,5 +148,11 @@ namespace blog_website_api.Repositories
             return result;
         }
 
+        public async Task<Post> GetPostById(Guid id)
+        {
+            var post = await _context.Posts.FindAsync(id);
+
+            return post;
+        }
     }
 }

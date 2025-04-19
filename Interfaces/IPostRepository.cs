@@ -9,7 +9,9 @@ namespace blog_website_api.Interfaces
 {
     public interface IPostRepository
     {
+        Task<IEnumerable<PostListDto>> GetAll(Guid userId);
         Task<PostDetailDto> GetPostBySlug(string slug);
+        Task<Post> GetPostById(Guid id);
         Task<bool> IsPostLikedByCurrentUser(Guid userId, Guid postId);
         Task<PostDetailDto> CreatePostAsync(CreatePostDto createPostDto, Guid authorId);
         Task<PaginatedResult<PostListDto>> GetPostsByCategory(
