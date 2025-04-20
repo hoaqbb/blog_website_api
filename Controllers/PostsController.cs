@@ -47,7 +47,15 @@ namespace blog_website_api.Controllers
                 var principal = _tokenService.GetPrincipalFromAccessToken(accessToken);
                 var isUserLogedIn = Guid.TryParse(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid userId);
                 if (isUserLogedIn)
+                {
                     post.IsLikedByCurrentUser = await _postRepository.IsPostLikedByCurrentUser(userId, post.Id);
+
+                    // Find and mark comments liked by current user
+                    if (post.PostComments?.Any() == true)
+                    {
+                        await _postRepository.MarkCommentsLikedByUser(userId, post.PostComments);
+                    }
+                }
             }
             
             return Ok(post);

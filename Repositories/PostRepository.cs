@@ -44,6 +44,20 @@ namespace blog_website_api.Repositories
             return post;
         }
 
+        public async Task MarkCommentsLikedByUser(Guid userId, List<CommentDto> comments)
+        {
+            var commentIds = comments.Select(x => x.Id).ToList();
+            var likedcommentIds = await _context.CommentLikes
+                .Where(x => x.UserId == userId && commentIds.Contains(x.CommentId))
+                .Select(x => x.CommentId)
+                .ToListAsync();
+
+            foreach (var cmt in comments)
+            {
+                cmt.IsLikedByCurrentUser = likedcommentIds.Contains(cmt.Id);
+            }
+        }
+
         public async Task<bool> IsPostLikedByCurrentUser(Guid userId, Guid postId)
         {
             var isLiked = await _context.PostLikes

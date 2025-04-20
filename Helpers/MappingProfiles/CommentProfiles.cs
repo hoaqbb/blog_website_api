@@ -13,7 +13,10 @@ namespace blog_website_api.Helpers.MappingProfiles
                 .ForMember(dest => dest.Author, opt => opt.MapFrom(src =>
                     src.User))
                 .ForMember(dest => dest.ReplyCommentCount, opt => opt.MapFrom(src =>
-                    src.InverseParent.Where(x => x.ParentId == src.Id).Count()));
+                    src.InverseParent.Where(x => x.ParentId == src.Id).Count()))
+                .ForMember(dest => dest.LikeCount, opt => opt.MapFrom(src =>
+                    src.CommentLikes.Count()))
+                .ForMember(dest => dest.IsLikedByCurrentUser, opt => opt.Ignore());
         }
     }
 }
