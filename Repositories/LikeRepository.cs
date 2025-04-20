@@ -33,5 +33,25 @@ namespace blog_website_api.Repositories
             _context.Remove(isLiked);
             return (await _context.SaveChangesAsync() > 0) ? true : false;
         }
+        public async Task<bool> LikeCommentAsync(int commentId, Guid userId)
+        {
+            var newLike = new CommentLike
+            {
+                CommentId = commentId,
+                UserId = userId
+            };
+            await _context.AddAsync(newLike);
+            return (await _context.SaveChangesAsync() > 0) ? true : false;
+        }
+
+        public async Task<bool> UnlikeCommentAsync(int commentId, Guid userId)
+        {
+            var isLiked = await _context.CommentLikes
+                .SingleOrDefaultAsync(x => x.CommentId == commentId && x.UserId == userId);
+
+            if (isLiked == null) return false;
+            _context.Remove(isLiked);
+            return (await _context.SaveChangesAsync() > 0) ? true : false;
+        }
     }
 }
