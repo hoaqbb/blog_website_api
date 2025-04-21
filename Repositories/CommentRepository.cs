@@ -1,4 +1,6 @@
-﻿using blog_website_api.Data.Entities;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using blog_website_api.Data.Entities;
 using blog_website_api.DTOs.CommentDtos;
 using blog_website_api.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -8,10 +10,35 @@ namespace blog_website_api.Repositories
     public class CommentRepository : ICommentRepository
     {
         private readonly BlogDbContext _context;
+        private readonly IMapper _mapper;
 
-        public CommentRepository(BlogDbContext context)
+        public CommentRepository(BlogDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
+        }
+
+        public async Task<CommentDto> CreateComment(CreateCommentDto createCommentDto, Guid userId)
+        {
+            var cmt = new PostComment
+            {
+                Content = createCommentDto.Content,
+                UserId = userId,
+                PostId = createCommentDto.PostId
+            };
+
+            await _context.AddAsync(cmt);
+
+            if(await _context.SaveChangesAsync() > 0)
+            {
+                var createdCmt = await _context.PostComments
+                    .ProjectTo<CommentDto>(_mapper.ConfigurationProvider)
+                    .SingleOrDefaultAsync(x => x.Id == cmt.Id);
+                    
+                return _mapper.Map<CommentDto>(createdCmt);
+            }
+
+            return null;
         }
 
         public async Task<PostComment?> GetCommentById(int id)
