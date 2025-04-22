@@ -16,7 +16,8 @@ namespace blog_website_api.Helpers.MappingProfiles
                     src.InverseParent.Where(x => x.ParentId == src.Id).Count()))
                 .ForMember(dest => dest.LikeCount, opt => opt.MapFrom(src =>
                     src.CommentLikes.Count()))
-                .ForMember(dest => dest.IsLikedByCurrentUser, opt => opt.Ignore());
+                .ForMember(dest => dest.IsLikedByCurrentUser, opt => opt.Ignore())
+                .ForMember(dest => dest.ReplyComments, opt => opt.Ignore());
         }
     }
 }

@@ -8,5 +8,6 @@ namespace blog_website_api.Interfaces
         Task<CommentDto> CreateComment(CreateCommentDto createCommentDto, Guid userId);
         Task<PostComment?> GetCommentById(int id);
         Task<bool> IsCommentLikedByCurrentUser(Guid userId, int commentId);
+        Task<List<CommentDto>> GetReplyComments(int commentId);
     }
 }

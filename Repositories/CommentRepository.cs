@@ -4,6 +4,7 @@ using blog_website_api.Data.Entities;
 using blog_website_api.DTOs.CommentDtos;
 using blog_website_api.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.Design;
 
 namespace blog_website_api.Repositories
 {
@@ -48,11 +49,20 @@ namespace blog_website_api.Repositories
             return cmt;
         }
 
+        public async Task<List<CommentDto>> GetReplyComments(int commentId)
+        {
+            var replyCmts = await _context.PostComments
+                .Where(x => x.ParentId == commentId)
+                .ProjectTo<CommentDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            return replyCmts;
+        }
+
         public async Task<bool> IsCommentLikedByCurrentUser(Guid userId, int commentId)
         {
             var isLiked = await _context.CommentLikes
                 .AnyAsync(x => x.UserId == userId && x.CommentId == commentId);
-
             return isLiked;
         }
     }

@@ -37,5 +37,30 @@ namespace blog_website_api.Controllers
 
             return BadRequest("Falied to comment post!");
         }
+
+        [HttpGet("{commentId}/replies")]
+        public async Task<ActionResult> GetReplyComments(int commentId)
+        {
+            HttpContext.Request.Cookies.TryGetValue("accessToken", out string? accessToken);
+            var replyCmts = await _commentRepository.GetReplyComments(commentId);
+            if (accessToken != null)
+            {
+                var principal = _tokenService.GetPrincipalFromAccessToken(accessToken);
+                var isUserLogedIn = Guid.TryParse(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid userId);
+                if (isUserLogedIn)
+                {
+                    // Find and mark comments liked by current user
+                    if (replyCmts.Any() == true)
+                    {
+                        await _postRepository.MarkCommentsLikedByUser(userId, replyCmts);
+                    }
+                }
+            }
+
+            if (replyCmts != null)
+                return Ok(replyCmts);
+
+            return BadRequest("Falied to load reply comments!");
+        }
     }
 }

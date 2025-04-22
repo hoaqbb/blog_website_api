@@ -13,5 +13,6 @@ namespace blog_website_api.DTOs.CommentDtos
         public int ReplyCommentCount { get; set; } = 0;
         public int LikeCount { get; set; } = 0;
         public bool IsLikedByCurrentUser { get; set; }
+        public List<CommentDto> ReplyComments { get; set; } = new List<CommentDto>{ };
     }
 }
