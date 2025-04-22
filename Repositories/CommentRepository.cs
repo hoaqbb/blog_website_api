@@ -65,5 +65,29 @@ namespace blog_website_api.Repositories
                 .AnyAsync(x => x.UserId == userId && x.CommentId == commentId);
             return isLiked;
         }
+
+        public async Task<CommentDto> ReplyComment(CreateCommentDto createCommentDto, int commentId, Guid userId)
+        {
+            var cmt = new PostComment
+            {
+                Content = createCommentDto.Content,
+                UserId = userId,
+                PostId = createCommentDto.PostId,
+                ParentId = commentId
+            };
+
+            await _context.AddAsync(cmt);
+
+            if (await _context.SaveChangesAsync() > 0)
+            {
+                var createdCmt = await _context.PostComments
+                    .ProjectTo<CommentDto>(_mapper.ConfigurationProvider)
+                    .SingleOrDefaultAsync(x => x.Id == cmt.Id);
+
+                return _mapper.Map<CommentDto>(createdCmt);
+            }
+
+            return null;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using blog_website_api.DTOs.CommentDtos;
+﻿using blog_website_api.Data.Entities;
+using blog_website_api.DTOs.CommentDtos;
 using blog_website_api.Interfaces;
 using blog_website_api.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -13,11 +14,13 @@ namespace blog_website_api.Controllers
     {
         private readonly ICommentRepository _commentRepository;
         private readonly IPostRepository _postRepository;
+        private readonly ITokenService _tokenService;
 
-        public CommentsController(ICommentRepository commentRepository, IPostRepository postRepository)
+        public CommentsController(ICommentRepository commentRepository, IPostRepository postRepository, ITokenService tokenService)
         {
             _commentRepository = commentRepository;
             _postRepository = postRepository;
+            _tokenService = tokenService;
         }
 
         [Authorize]
