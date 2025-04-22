@@ -65,5 +65,27 @@ namespace blog_website_api.Controllers
 
             return BadRequest("Falied to load reply comments!");
         }
+
+        [Authorize]
+        [HttpPost("{commentId}/reply")]
+        public async Task<ActionResult> ReplyComment(
+            int commentId,
+            [FromBody] CreateCommentDto createCommentDto
+            )
+        {
+            if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid userId))
+                return BadRequest("Invalid client request!");
+
+            var post = await _postRepository.GetPostById(createCommentDto.PostId);
+            var cmt = await _commentRepository.GetCommentById(commentId);
+            if (post == null || cmt == null) return NotFound("Post or comment is not existed!");
+
+            var replyCmt = await _commentRepository.ReplyComment(createCommentDto, commentId, userId);
+
+            if (replyCmt != null)
+                return Ok(replyCmt);
+
+            return BadRequest("Falied to reply comment!");
+        }
     }
 }
